@@ -161,6 +161,7 @@
         </div>
         <div class="body_center love">
             <div class="block">
+                <!-- Adding empty divs here; they will be filled dynamically -->
                 <div class="div1"></div>
                 <div class="div2"></div>
                 <div class="div3"></div>
@@ -191,13 +192,6 @@
             index = 0,
             clone_block;
 
-        block.style.top = "50%";
-        block.style.left = "50%";
-        block.style.margin = "-20px 0 0 -20px";
-
-        const block_left = parseFloat(window.getComputedStyle(block, null).left.slice(0, -2)),
-            block_top = parseFloat(window.getComputedStyle(block, null).top.slice(0, -2));
-
         function Next() {
             if (++index >= 24) {
                 clearInterval(timer);
@@ -205,20 +199,28 @@
                 return;
             }
 
-            block.style.visibility = "visible";
+            let newBlock = document.createElement('div');
+            newBlock.className = "block";
+            newBlock.style.visibility = "visible";
+            newBlock.style.left = (parseFloat(window.getComputedStyle(love, null).left.slice(0, -2)) + 40 * offset_pitn["block" + index][0]) + "px";
+            newBlock.style.top = (parseFloat(window.getComputedStyle(love, null).top.slice(0, -2)) - 40 * offset_pitn["block" + index][1]) + "px";
 
-            block.style.left = block_left + 40 * offset_pitn["block" + index][0] + "px";
-            block.style.top = block_top - 40 * offset_pitn["block" + index][1] + "px";
-            for (let i = 0; i < block.children.length; i++) {
-                block.children[i].style.left = blk_pitn["block" + index][i][0] * -40 + "px";
-                block.children[i].style.top = blk_pitn["block" + index][i][1] * -40 + "px";
+            for (let i = 0; i < 4; i++) {
+                let div = document.createElement('div');
+                div.style.width = "40px";
+                div.style.height = "40px";
+                div.style.position = "absolute";
+                div.style.background = "url('heart.png') no-repeat";
+                div.style.backgroundSize = "contain";
+                div.style.boxSizing = "border-box";
+                div.style.left = blk_pitn["block" + index][i][0] * -40 + "px";
+                div.style.top = blk_pitn["block" + index][i][1] * -40 + "px";
+                newBlock.appendChild(div);
             }
 
-            clone_block = block.cloneNode(true);
-            love.appendChild(clone_block);
+            love.appendChild(newBlock);
 
             if (love.children.length >= 24) {
-                blocks[blocks.length - 1].children[2].style.display = "none";
                 block.style.display = "none";
             }
         }
@@ -250,11 +252,9 @@
 
             const audio = document.getElementById("audio");
             audio.play().then(() => {
-                setTimeout(() => {
-                    timer = setInterval(() => {
-                        Next();
-                    }, 300);
-                }, 12000);
+                timer = setInterval(() => {
+                    Next();
+                }, 300);
             }).catch(error => {
                 console.log("Failed to play audio:", error);
             });
