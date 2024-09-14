@@ -117,12 +117,28 @@
             opacity: 0; /* Start with invisible */
             animation: fadeInUp 2s forwards; /* Apply the animation */
         }
+        .play-button {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 10px 20px;
+            font-size: 20px;
+            background-color: #f08;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            z-index: 100;
+        }
     </style>
 </head>
 <body>
     <audio id="audio" preload="auto">
         <source src="1.mp3" />
     </audio>
+
+    <button class="play-button" id="playButton">Play Music</button>
 
     <div class="container" onselectstart="return false;" unselectable="on" style="-moz-user-select:none;">
         <div class="body_left">
@@ -262,12 +278,12 @@
             }, 22);
         }
 
-        window.onload = function () {
-            // Add user interaction to start audio if necessary
+        document.getElementById("playButton").addEventListener("click", () => {
             const audio = document.getElementById("audio");
-            audio.play().catch(error => {
-                // Handle the error, such as asking for user interaction
-                console.log("Autoplay was prevented. Please interact with the page to start the audio.");
+            audio.play().then(() => {
+                document.getElementById("playButton").style.display = "none"; // Hide button after playing
+            }).catch(error => {
+                console.log("Failed to play audio:", error);
             });
 
             setTimeout(() => {
@@ -275,7 +291,7 @@
                     Next();
                 }, 300);
             }, 12000);
-        };
+        });
     </script>
 </body>
 </html>
